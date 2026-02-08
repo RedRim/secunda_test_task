@@ -1,0 +1,10 @@
+fastapi==0.115.6
+pydantic==2.10.3
+pydantic-settings==2.5.2
+sqlalchemy==2.0.35
+alembic==1.13.2
+asyncpg==0.29.0
+psycopg2-binary==2.9.9
+uvicorn==0.34.0
+python-dotenv==1.0.1
+pyfa-converter-v2==2.0.0rc1

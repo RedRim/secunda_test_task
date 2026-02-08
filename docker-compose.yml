@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15
+    restart: always
+    container_name: secunda_db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - secunda_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build: .
+    container_name: secunda_app
+    command: uvicorn app.main:app --host 0.0.0.0 --port ${PORT} --reload
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      db:
+        condition: service_healthy
+    env_file:
+      - .env
+    networks:
+      - secunda_network
+    volumes:
+      - ./app:/app/app
+      - ./seed_data.py:/app/seed_data.py
+      - ./migrations:/app/migrations
+
+volumes:
+  postgres_data:
+
+networks:
+  secunda_network:
+    driver: bridge
